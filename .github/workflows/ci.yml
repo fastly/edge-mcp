@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-test:
+    name: build · test · clippy (MSRV 1.88)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Build on the declared MSRV so `rust-version` stays honest.
+      - name: Install Rust 1.88 + wasm target
+        uses: dtolnay/rust-toolchain@1.88.0
+        with:
+          components: clippy
+          targets: wasm32-wasip1
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Test (host, locked)
+        run: cargo test --workspace --all-features --locked
+
+      - name: Clippy (host, deny warnings)
+        run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+
+      - name: Build wasm (locked)
+        run: cargo build --release --target wasm32-wasip1 --locked
+
+      - name: Clippy (wasm, deny warnings)
+        run: cargo clippy --target wasm32-wasip1 --locked -- -D warnings
+
+  audit:
+    name: security advisories
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Scans the committed Cargo.lock against the RustSec advisory database.
+      - uses: rustsec/audit-check@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

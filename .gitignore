@@ -1,0 +1,13 @@
+/target
+**/*.rs.bk
+# Cargo.lock IS committed — this repo builds a deployable binary and needs
+# reproducible dependency resolution (build with --locked).
+bin/
+.fastly/
+pkg/
+data/
+.claude/worktrees/
+
+# Internal engineering artifacts (not part of the public reference impl)
+docs/plans/
+docs/residual-review-findings/

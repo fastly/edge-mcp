@@ -1,0 +1,50 @@
+# Fastly Compute manifest for the example MCP server.
+#
+# The reusable crates (mcp-core, mcp-fastly) are libraries; example-server is
+# the deployable Compute program that produces bin/main.wasm.
+manifest_version = 3
+name = "compute-mcp-server"
+description = "Stateless MCP (2026-07-28) server on Fastly Compute"
+language = "rust"
+authors = ["austin@fastly.com"]
+
+[scripts]
+build = "cargo build --release --target wasm32-wasip1 --package example-server && cp target/wasm32-wasip1/release/example-server.wasm bin/main.wasm"
+
+# --- Local (Viceroy) resource bindings -------------------------------------
+# These let `fastly compute serve` run the auth verifier and Tasks store
+# locally. Production provisioning is declared under [setup.*] (see README).
+
+[local_server]
+
+[local_server.kv_stores]
+task_store = { file = "data/kv_tasks.json", format = "json" }
+jwks_cache = { file = "data/kv_jwks.json", format = "json" }
+idempotency = { file = "data/kv_idem.json", format = "json" }
+
+[local_server.secret_stores]
+[[local_server.secret_stores.auth]]
+key = "mrtr-aead-key-1"
+# 32-byte AEAD key (raw or base64). Set SECRET_MRTR_AEAD_KEY_1 for local runs.
+# Rotate by adding mrtr-aead-key-2 and setting signer_current_kid=2.
+env = "SECRET_MRTR_AEAD_KEY_1"
+
+[local_server.config_stores.verifier]
+format = "inline-toml"
+[local_server.config_stores.verifier.contents]
+# Secure by default: authentication is REQUIRED. Replace the issuer / audience /
+# jwks_uri / protected-resource-metadata placeholders with your real values
+# before deploying. To run locally WITHOUT auth, use `fastly.demo.toml` instead
+# (it sets allow_anonymous_demo="true") — do not disable auth here.
+auth_required = "true"
+issuer = "https://issuer.example.com"
+audience = "https://mcp.example.com"
+jwks_uri = "https://issuer.example.com/.well-known/jwks.json"
+protected_resource_metadata_url = "https://mcp.example.com/.well-known/oauth-protected-resource"
+max_body_bytes = "1048576"
+
+# The JWKS fetch may only target this statically-declared backend — a natural
+# SSRF allowlist (Compute can only reach declared backends).
+[local_server.backends.issuer_jwks]
+url = "https://issuer.example.com"
+override_host = "issuer.example.com"

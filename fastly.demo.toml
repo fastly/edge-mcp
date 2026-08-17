@@ -1,0 +1,44 @@
+# ⚠️ INSECURE LOCAL DEMO CONFIG — DO NOT DEPLOY ⚠️
+#
+# This manifest runs the example server locally under Viceroy with
+# authentication DISABLED so the smoke test and quick experiments work without
+# an identity provider. It is intentionally separate from `fastly.toml` (which
+# is secure-by-default, auth required) so an open configuration can never be
+# deployed by accident.
+#
+#   viceroy --addr 127.0.0.1:7686 -C fastly.demo.toml bin/main.wasm
+#
+# Anonymous operation requires BOTH auth_required="false" AND the explicit
+# allow_anonymous_demo="true" acknowledgement below (see VerifierConfig).
+manifest_version = 3
+name = "compute-mcp-server-demo"
+description = "Local, unauthenticated demo of the stateless MCP server (do not deploy)"
+language = "rust"
+authors = ["austin@fastly.com"]
+
+[scripts]
+build = "cargo build --release --target wasm32-wasip1 --package example-server && cp target/wasm32-wasip1/release/example-server.wasm bin/main.wasm"
+
+[local_server]
+
+[local_server.kv_stores]
+task_store = { file = "data/kv_tasks.json", format = "json" }
+jwks_cache = { file = "data/kv_jwks.json", format = "json" }
+idempotency = { file = "data/kv_idem.json", format = "json" }
+
+[local_server.secret_stores]
+[[local_server.secret_stores.auth]]
+key = "mrtr-aead-key-1"
+env = "SECRET_MRTR_AEAD_KEY_1"
+
+[local_server.config_stores.verifier]
+format = "inline-toml"
+[local_server.config_stores.verifier.contents]
+# Anonymous demo mode — both flags are required, by design.
+auth_required = "false"
+allow_anonymous_demo = "true"
+max_body_bytes = "1048576"
+
+[local_server.backends.issuer_jwks]
+url = "https://issuer.example.com"
+override_host = "issuer.example.com"

@@ -1,0 +1,17 @@
+[package]
+name = "example-server"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Example stateless MCP server on Fastly Compute exercising complete/MRTR/task tools."
+
+[dependencies]
+mcp-core = { path = "../crates/mcp-core" }
+serde_json.workspace = true
+
+# Fastly bindings link only under wasm32-wasip1; the tool handlers are pure
+# mcp-core and are tested on the host.
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+fastly = "0.13"
+mcp-fastly = { path = "../crates/mcp-fastly" }

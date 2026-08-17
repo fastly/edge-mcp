@@ -1,0 +1,19 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/mcp-core",
+    "crates/mcp-fastly",
+    "example-server",
+]
+
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0"
+# Minimum supported Rust — the resolved dependency graph (Cargo.lock) needs a
+# recent toolchain; 1.88 is the version this workspace is verified to build on.
+rust-version = "1.88"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+insta = { version = "1", features = ["json"] }

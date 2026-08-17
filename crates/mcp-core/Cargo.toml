@@ -1,0 +1,28 @@
+[package]
+name = "mcp-core"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Transport-agnostic Model Context Protocol (2026-07-28) core: stateless JSON-RPC dispatch, MRTR, Tasks. No platform dependency."
+
+[features]
+default = ["aead"]
+# The AEAD Signer (ChaCha20-Poly1305). Platform-agnostic and WASM-compatible;
+# the host binding supplies the key bytes from its Secret Store.
+aead = ["dep:chacha20poly1305", "dep:base64"]
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+# Official MCP SDK — types-only. default-features=false keeps it to rmcp::model
+# + rmcp::ErrorData with no async transport/runtime; verified to build for
+# wasm32-wasip1. See docs/plans/2026-08-07-002-refactor-adopt-rmcp-types-plan.md.
+rmcp = { version = "3.1.1", default-features = false }
+# Used for Task id generation (always) and AEAD nonces (aead feature).
+getrandom = "0.2"
+chacha20poly1305 = { version = "0.10", optional = true }
+base64 = { version = "0.22", optional = true }
+
+[dev-dependencies]
+insta.workspace = true
