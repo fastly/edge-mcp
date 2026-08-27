@@ -4,17 +4,6 @@ A **reference implementation of the [Model Context Protocol](https://modelcontex
 `2026-07-28` (the stateless revision) on [Fastly Compute](https://www.fastly.com/products/compute),
 in Rust.**
 
----
-
-⚠️ **No ongoing maintenance — point-in-time example.** This repository is a reference
-architecture built against the MCP
-`2026-07-28` specification. It **will not be maintained** beyond the initial implementation. Expect no updates, bug
-fixes, security patches, dependency bumps, issue responses, or pull-request
-reviews. Fork it and adapt it to your needs; do not depend on this repository
-itself receiving any changes.
-
----
-
 MCP is how AI agents call external tools, prompts, and resources. The
 `2026-07-28` revision made the protocol stateless — no `initialize` handshake,
 no `Mcp-Session-Id`, per-request identity carried in `_meta`, cacheable list
@@ -32,8 +21,6 @@ platform.
 This is a **reference implementation to learn from and build on — not a
 certified or turnkey production service.** Read this before depending on it:
 
-- **Unmaintained.** A point-in-time snapshot — no updates, fixes, or reviews
-  (see the notice above). Fork it rather than depending on it.
 - **Agent-generated.** The code and its tests were written by AI coding agents,
   not by hand — human input was at the direction, design, and decision level.
   Audit it yourself before relying on any of it.

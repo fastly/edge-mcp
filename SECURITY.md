@@ -1,10 +1,9 @@
 # Security
 
-This is an **unmaintained reference implementation** (see the notice in
-[`README.md`](README.md)). It aims to be *secure by default* and to model good
-MCP security patterns, but it is not a managed product. Before any real
-deployment, read this document, complete the deployment-layer controls below,
-and adopt it into a maintained fork with its own patch process.
+This is a **reference implementation**. It aims to be *secure by default* and
+to model good MCP security patterns, but it is not a managed product. Before
+any real deployment, read this document and complete the deployment-layer
+controls below.
 
 ## What this codebase enforces
 
@@ -108,9 +107,3 @@ into an AI trust boundary. A consuming client/agent must treat all of them as
 **untrusted input** — isolate them from system instructions, and require human
 confirmation for high-impact actions. This server returns deterministic demo
 content; those obligations rest with the consumer.
-
-## Reporting
-
-This repository is unmaintained and will not receive security patches. If you
-build on it, **fork it, take security ownership, and establish your own patch
-SLA and vulnerability-reporting process.**
